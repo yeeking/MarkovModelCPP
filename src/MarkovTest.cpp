@@ -409,6 +409,51 @@ bool zeroOrderSample()
     return true; 
 }
 
+bool checkLast()
+{
+    MarkovChain chain{};
+    state_sequence seq1 = {"a"};
+    chain.addObservationAllOrders(seq1, "b"); // a->b
+    state_single obs = chain.generateObservation(seq1, 1);
+    state_and_observation last = chain.getLastMatch();
+    std::string expect = chain.stateSequenceToString(seq1);
+    if (last.first == expect && last.second == "b") return true;
+    return false; 
+}
+
+
+bool removeStateToObs()
+{
+    MarkovChain chain{};
+    state_sequence seq1 = {"a"};
+    chain.addObservationAllOrders(seq1, "b"); // a->b
+    state_single obs = chain.generateObservation(seq1, 1);
+    state_and_observation last = chain.getLastMatch();
+    state_single removeMe = chain.stateSequenceToString(seq1);
+    //chain.removeMapping
+    chain.removeMapping(removeMe, "b");
+    // now get an observation again  -should not be anything there
+    obs = chain.generateObservation(seq1, 1);
+    if (obs == "0") return true; // the model should return an empty obs
+    return false; 
+}
+
+bool reinforceChain()
+{
+    MarkovChain chain{};
+    state_sequence seq1 = {"a"};
+    chain.addObservationAllOrders(seq1, "b"); // a->b
+    state_single obs = chain.generateObservation(seq1, 1);
+    state_and_observation last = chain.getLastMatch();
+    state_single reinforceMe = chain.stateSequenceToString(seq1);
+    //chain.removeMapping
+    chain.amplifyMapping(reinforceMe, "b");
+    // now verify that this mapping is more likely by getting multiple samples
+    // from the model and counting how many of each appear 
+
+    return false; 
+}
+
 void runMarkovTests()
 {
     int total_tests, passed_tests;
@@ -416,144 +461,153 @@ void runMarkovTests()
     passed_tests = 0; 
     bool res = false; 
     
-    res = emptyChainReturnsNull();
-    log("emptyChainReturnsNull", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // res = emptyChainReturnsNull();
+    // log("emptyChainReturnsNull", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
     
-    res = addOneTokenReturnOneToken();
-    log("addOneTokenReturnOneToken", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // res = addOneTokenReturnOneToken();
+    // log("addOneTokenReturnOneToken", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
     
-    res = addSameTwoObsReturnOneObs();
-    log("addSameTwoObsReturnOneObs", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // res = addSameTwoObsReturnOneObs();
+    // log("addSameTwoObsReturnOneObs", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
     
-    res = addSameTwoObsReturnDiffObs();
-    log("addSameTwoObsReturnDiffObs", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // res = addSameTwoObsReturnDiffObs();
+    // log("addSameTwoObsReturnDiffObs", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
 
-    res = returnsHighestOrder();
-    log("returnsHighestOrder", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // res = returnsHighestOrder();
+    // log("returnsHighestOrder", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
     
-    res = respectsMaxOrderLow();
-    log("respectsMaxOrderLow", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // res = respectsMaxOrderLow();
+    // log("respectsMaxOrderLow", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
 
-    res = respectsMaxOrderHigh();
-    log("respectsMaxOrderHigh", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // res = respectsMaxOrderHigh();
+    // log("respectsMaxOrderHigh", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
     
-    res = addAllOrders();
-    log("addAllOrders", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // res = addAllOrders();
+    // log("addAllOrders", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
     
-    res = addAllOrdersWorksWithOrder1();
-    log("addAllOrdersWorksWithOrder1", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 9a
-    res = addAllOrdersWorksWithOrder2();
-    log("addAllOrdersWorksWithOrder2", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // res = addAllOrdersWorksWithOrder1();
+    // log("addAllOrdersWorksWithOrder1", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
+    // // 9a
+    // res = addAllOrdersWorksWithOrder2();
+    // log("addAllOrdersWorksWithOrder2", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
     
-    // 10
-    res = breakStateIntoAllOrdersThreeOrders();
-    log("breakStateIntoAllOrdersThreeOrders", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 11
-    res = breakStateIntoAllOrdersThreeOrdersSize();
-    log("breakStateIntoAllOrdersThreeOrdersSize", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 12
-    res = breakStateIntoAllOrdersThreeOrdersContents();
-    log("breakStateIntoAllOrdersThreeOrdersContents", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // // 10
+    // res = breakStateIntoAllOrdersThreeOrders();
+    // log("breakStateIntoAllOrdersThreeOrders", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
+    // // 11
+    // res = breakStateIntoAllOrdersThreeOrdersSize();
+    // log("breakStateIntoAllOrdersThreeOrdersSize", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
+    // // 12
+    // res = breakStateIntoAllOrdersThreeOrdersContents();
+    // log("breakStateIntoAllOrdersThreeOrdersContents", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
 
-    //13
-    res = sequenceToStringOne();
-    log("sequenceToStringOne", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // //13
+    // res = sequenceToStringOne();
+    // log("sequenceToStringOne", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
 
-    //14
-    res = sequenceToStringThree();
-    log("sequenceToStringThree", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // //14
+    // res = sequenceToStringThree();
+    // log("sequenceToStringThree", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
 
-    // 15
-    res = unkownKeyUseDistribution();
-    log("unkownKeyUseDistribution", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 15a
-    res = unkownKeyUseDistributionMoreThanOne();
-    log("unkownKeyUseDistributionMoreThanOne", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // // 15
+    // res = unkownKeyUseDistribution();
+    // log("unkownKeyUseDistribution", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
+    // // 15a
+    // res = unkownKeyUseDistributionMoreThanOne();
+    // log("unkownKeyUseDistributionMoreThanOne", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
     
     
-    // 16
-    res = sequenceToStringMaxLength();
-    log("sequenceToStringMaxLength", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // // 16
+    // res = sequenceToStringMaxLength();
+    // log("sequenceToStringMaxLength", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
 
-    // 17
-    res = sequenceToStringMaxLengthTooLong();
-    log("sequenceToStringMaxLengthTooLong", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    //  18
-    res = sequenceToStringMaxLengthTheSame();
-    log("sequenceToStringMaxLengthTheSame", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 19
-    res = addStateToStateSequence();
-    log("addStateToStateSequence", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 20
-    res = getOutputNoData();
-    log("getOutputNoData", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // // 17
+    // res = sequenceToStringMaxLengthTooLong();
+    // log("sequenceToStringMaxLengthTooLong", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
+    // //  18
+    // res = sequenceToStringMaxLengthTheSame();
+    // log("sequenceToStringMaxLengthTheSame", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
+    // // 19
+    // res = addStateToStateSequence();
+    // log("addStateToStateSequence", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
+    // // 20
+    // res = getOutputNoData();
+    // log("getOutputNoData", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
 
-    // 22
-    res = variableOrderGenerate();
-    log("variableOrderGenerate", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+    // // 22
+    // res = variableOrderGenerate();
+    // log("variableOrderGenerate", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
 
-    // 23
-    res = zeroOrderSample();
-    log("zeroOrderSample", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-
-
-
+    // // 23
+    // res = zeroOrderSample();
+    // log("zeroOrderSample", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
     
-    res = respectsMaxOrderLow();
-    log("respectsMaxOrderLow", res);
+    // // 24
+    // res = checkLast();
+    // log("checkLast", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
+
+    // 25   
+    // res = removeStateToObs();
+    // log("removeStateToObs", res);
+    // total_tests ++;
+    // if (res) passed_tests ++;
+    // std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
+  
+    // 26
+    res = reinforceChain();
+    log("reinforceChain", res);
     total_tests ++;
     if (res) passed_tests ++;
-
-
     std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
   
 }

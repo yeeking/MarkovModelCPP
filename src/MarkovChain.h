@@ -17,7 +17,7 @@
 
 typedef std::vector<std::string> state_sequence;
 typedef std::string state_single;
-typedef std::pair<state_single, state_single> state_to_state;
+typedef std::pair<state_single, state_single> state_and_observation;
 
 /**
  * Represents a markov chain
@@ -120,8 +120,19 @@ class MarkovChain {
      * returns the key-value that was used to 
      * generate the last observation via generateObservation
      */
-    state_to_state getLastMatch();
+    state_and_observation getLastMatch();
 
+  /**
+   * remove the mapping from the sent state key (derived from a state_sequence via stateSequenceToString) to the sent observation 
+   * where state_key should be a key in this->map
+   */
+    void removeMapping(state_single state_key, state_single unwanted_option);
+    
+  /**
+   * amplify this mapping  
+   */
+    void amplifyMapping(state_single state_key, state_single unwanted_option);
+    
 private:
 /**
  * Maps from string keys to list of possible next states
@@ -130,5 +141,5 @@ private:
     std::map<state_single,state_sequence> model;
     int maxOrder; 
     int orderOfLastMatch;
-    state_to_state lastMatch;
+    state_and_observation lastMatch;
 };

@@ -128,7 +128,7 @@ state_single MarkovChain::generateObservation(const state_sequence& prevState, i
   // don't allow orders beyond our own maxOrder
   if (maxOrder > this->maxOrder) maxOrder = this->maxOrder;
   // attempt to find a key in the chain that matches the incoming prevState
-  std::string key = stateSequenceToString(prevState, maxOrder);
+  state_single key = stateSequenceToString(prevState, maxOrder);
   state_sequence poss_next_states{};
   bool have_key = true;
   try
@@ -141,26 +141,34 @@ state_single MarkovChain::generateObservation(const state_sequence& prevState, i
   }
   if (have_key)
   {
-    this->orderOfLastMatch = maxOrder; 
     // get a random numner
-    return pickRandomObservation(poss_next_states);
+    state_single obs = pickRandomObservation(poss_next_states);
+    // remember what we did
+    this->orderOfLastMatch = maxOrder; 
+    this->lastMatch = state_and_observation{key, obs};
+    return obs; 
   }
   else {
     //std::cout << "MarkovChain::generateObservation no match for that key " << key << "  at order " << maxOrder << std::endl;
     if (maxOrder > 1) 
     {
       //std::cout << "no match, reducing order to " << maxOrder - 1 << std::endl;
+      // recurse with lower max order
       return generateObservation(prevState, maxOrder-1);
     }
     else {
       // worst case - nothing at higher than zero order
-       return this->zeroOrderSample();
+      this->orderOfLastMatch = 0;
+      state_single obs = zeroOrderSample();
+      this->lastMatch = state_and_observation{"0", obs};
+      return obs; 
     }
   }
 }
 
 state_single MarkovChain::zeroOrderSample()
 {
+
   state_sequence poss_next_states{};
   // no key - choose something at random from all next observed states
   int randInd = 0;
@@ -181,13 +189,16 @@ state_single MarkovChain::zeroOrderSample()
       continue;
     }
   }
-  this->orderOfLastMatch = 0; 
   return state;
 }
 
 
 state_single MarkovChain::pickRandomObservation(const state_sequence& seq)
 {
+  if (seq.size() == 0) // they key existed but there';s nothing there.
+  {
+    return "0";
+  } 
   auto ind = 0;
   if (seq.size() > 1) ind = rand() % seq.size();  
   return seq.at(ind);
@@ -215,7 +226,42 @@ int MarkovChain::getOrderOfLastMatch()
   return this->orderOfLastMatch;
 }
 
-state_to_state MarkovChain::getLastMatch()
+state_and_observation MarkovChain::getLastMatch()
 {
   return this->lastMatch;
 }
+
+void  MarkovChain::removeMapping(state_single state_key, state_single unwanted_option)
+{
+  state_sequence current_options{};
+  bool have_key = true;
+  try
+  {
+    current_options = model.at(state_key);
+  }
+  catch (const std::out_of_range& oor)
+  {
+    have_key = false; // nothing to do as we don't even have the state_key 
+  }
+  if (have_key) // we have seen this state_key
+  {
+    // create a new set of possible 
+    state_sequence updated_options{};
+    for (const state_single& obs : current_options)
+    {
+      if (obs != unwanted_option)
+      {
+        updated_options.push_back(obs);
+      }
+    }
+    this->model[state_key] = updated_options;
+  }
+ 
+}
+
+void MarkovChain::amplifyMapping(state_single state_key, state_single unwanted_option)
+{
+  
+}
+
+
