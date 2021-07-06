@@ -40,7 +40,7 @@ class MarkovManager {
      * Rotates the sent seq and pops the sent item on the end
      * [1,2,3], 4 -> [2,3,4]
      */
-      void addStateToStateSequence(state_sequence& seq, state_single new_state);
+      void addStateToStateSequence(const state_sequence& seq, state_single new_state);
 
        
 
