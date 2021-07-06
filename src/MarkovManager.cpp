@@ -46,7 +46,7 @@ state_single MarkovManager::getEvent()
 
 void MarkovManager::addStateToStateSequence(state_sequence& seq, state_single new_state){
   // shift everything across
-  for (auto i=1;i<seq.size();i++)
+  for (long unsigned int i=1;i<seq.size();i++)
   {
     seq[i-1] = seq[i];
   }

@@ -17,6 +17,7 @@
 
 typedef std::vector<std::string> state_sequence;
 typedef std::string state_single;
+typedef std::pair<state_single, state_single> state_to_state;
 
 /**
  * Represents a markov chain
@@ -76,7 +77,7 @@ class MarkovChain {
    * @param max_order:an int representing which limits how much of the sequence we use 
    */
 
-    std::string stateSequenceToString(const state_sequence& sequence, int maxOrder);
+    std::string stateSequenceToString(const state_sequence& sequence, long unsigned int maxOrder);
     /**
      * generateObservation: generate a new observation from the chain. Tries to get highest possible 
      * order match to the incoming sequence by recursively testing sequences at length len(sequence) -> 1
@@ -114,12 +115,20 @@ class MarkovChain {
      * pick a random observation from all observations
      */
     state_single zeroOrderSample();
+
+    /**
+     * returns the key-value that was used to 
+     * generate the last observation via generateObservation
+     */
+    state_to_state getLastMatch();
+
 private:
 /**
  * Maps from string keys to list of possible next states
  * 
  */
-    std::map<std::string,state_sequence> model;
+    std::map<state_single,state_sequence> model;
     int maxOrder; 
     int orderOfLastMatch;
+    state_to_state lastMatch;
 };

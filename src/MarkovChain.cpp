@@ -65,9 +65,9 @@ std::vector<state_sequence>  MarkovChain::breakStateIntoAllOrders(const state_se
 {
   std::vector<state_sequence> allPrevs;
   // start is in the range 0-prevState.size() - 1
-  auto end = prevState.size();
+  long unsigned int end = prevState.size();
   allPrevs.push_back(prevState);
-  for (int start = 1; start < end; start ++)
+  for (long unsigned int start = 1; start < end; start ++)
   {
     state_sequence::const_iterator first = prevState.begin() + start;
     state_sequence::const_iterator last = prevState.begin() + prevState.size();
@@ -90,7 +90,7 @@ std::string MarkovChain::stateSequenceToString(const state_sequence& sequence)
   } 
   return str;
 }
-std::string MarkovChain::stateSequenceToString(const state_sequence& sequence, int maxOrder)
+std::string MarkovChain::stateSequenceToString(const state_sequence& sequence, long unsigned int maxOrder)
 {
   if (maxOrder >= sequence.size()){ 
     // max order is higher pr == than the order we have
@@ -100,8 +100,8 @@ std::string MarkovChain::stateSequenceToString(const state_sequence& sequence, i
   else {// requested maxOrdder is lower than the available order in the incoming state seq.
     std::string str = std::to_string(maxOrder); // write the order first
     str.append(",");
-    auto want_to_skip = sequence.size() - maxOrder;
-    auto skipped = 0;
+    long unsigned int want_to_skip = sequence.size() - maxOrder;
+    long unsigned int skipped = 0;
     // prefix it with the order
     for (const state_single& s : sequence)
     {
@@ -213,4 +213,9 @@ void MarkovChain::reset()
 int MarkovChain::getOrderOfLastMatch()
 {
   return this->orderOfLastMatch;
+}
+
+state_to_state MarkovChain::getLastMatch()
+{
+  return this->lastMatch;
 }
