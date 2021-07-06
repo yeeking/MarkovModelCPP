@@ -129,11 +129,16 @@ class MarkovChain {
     void removeMapping(state_single state_key, state_single unwanted_option);
     
   /**
-   * amplify this mapping  
+   * increase the chance of the sent mapping occuring by a certain amount 
    */
     void amplifyMapping(state_single state_key, state_single unwanted_option);
     
 private:
+/**
+ * returns the available states that follow the sent key, where the sent key 
+ * is derived from stateSequenceToString 
+ */
+    state_sequence getOptionsForSequenceKey(state_single seqAsKey);
 /**
  * Maps from string keys to list of possible next states
  * 

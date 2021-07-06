@@ -443,14 +443,21 @@ bool reinforceChain()
     MarkovChain chain{};
     state_sequence seq1 = {"a"};
     chain.addObservationAllOrders(seq1, "b"); // a->b
-    state_single obs = chain.generateObservation(seq1, 1);
-    state_and_observation last = chain.getLastMatch();
+    chain.addObservationAllOrders(seq1, "c"); // a->c
+    // now equal chance of a and c in respose to seq1
     state_single reinforceMe = chain.stateSequenceToString(seq1);
-    //chain.removeMapping
     chain.amplifyMapping(reinforceMe, "b");
-    // now verify that this mapping is more likely by getting multiple samples
-    // from the model and counting how many of each appear 
-
+    // now greater chance of a->b than a->c
+    int b_count = 0;
+    int c_count = 0;
+    for (auto i=0;i<100;i++) 
+    {
+        state_single obs = chain.generateObservation(seq1, 100);
+        if (obs == "b") b_count ++;
+        if (obs == "c") c_count ++;
+    }
+    //std::cout << "b and c count " << b_count << " " << c_count << std::endl;
+    if (b_count > c_count) return true;
     return false; 
 }
 

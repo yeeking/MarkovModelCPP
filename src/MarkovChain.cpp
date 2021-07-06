@@ -259,9 +259,36 @@ void  MarkovChain::removeMapping(state_single state_key, state_single unwanted_o
  
 }
 
-void MarkovChain::amplifyMapping(state_single state_key, state_single unwanted_option)
+void MarkovChain::amplifyMapping(state_single state_key, state_single wanted_option)
 {
-  
+  state_sequence options = getOptionsForSequenceKey(state_key);
+  if (options.size() == 0) // nothing mapped to this key... easy! 
+  {
+    options.push_back(wanted_option);
+    this->model[state_key] = options; 
+    return; 
+  }
+  // how many of the wanted option are there, relative to the total?
+  float total = options.size();
+  float wanted = 0;
+  for (const state_single& s : options) if (s == wanted_option) wanted ++;
+  for (auto i=0;i<wanted;i++) model[state_key].push_back(wanted_option);
 }
 
+
+
+state_sequence MarkovChain::getOptionsForSequenceKey(state_single seqAsKey)
+{
+  state_sequence options{};
+  bool have_key = true;
+  try
+  {
+    options = model.at(seqAsKey);
+  }
+  catch (const std::out_of_range& oor)
+  {
+    have_key = false; // nothing to do as we don't even have the state_key 
+  }
+  return options; 
+}
 
