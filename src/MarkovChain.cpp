@@ -85,8 +85,14 @@ std::string MarkovChain::stateSequenceToString(const state_sequence& sequence)
   // prefix it with the order
   for (const state_single& s : sequence)
   {
-    str.append(s);
-    str.append(",");   
+    if (s != "0")// ignore blank states
+    {
+      str.append(s);
+      str.append(",");  
+    } 
+    // else {
+    //   std::cout << "stateSequenceToString blank state ignored " << str << std::endl;
+    // }
   } 
   return str;
 }
@@ -269,8 +275,14 @@ void MarkovChain::amplifyMapping(state_single state_key, state_single wanted_opt
   }
   // how many of the wanted option are there, relative to the total?
   float wanted = 0;
-  for (const state_single& s : options) if (s == wanted_option) wanted ++;
-  for (auto i=0;i<wanted;i++) model[state_key].push_back(wanted_option);
+  float othermappings = 0;
+  for (const state_single& s : options) {
+    if (s == wanted_option) wanted ++;
+    else othermappings ++;
+  }
+  // basically match the number of othermappings
+  // to make this mapping as likely as any other
+  for (auto i=0;i<othermappings;i++) model[state_key].push_back(wanted_option);
 }
 
 

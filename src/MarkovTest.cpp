@@ -485,6 +485,46 @@ bool negFeedback()
     return true; 
 }
 
+bool stressNeg()
+{
+    MarkovManager man{};
+    for (auto i=0;i<500;i++)
+    {
+        man.putEvent("a");
+        man.putEvent("b");
+        man.putEvent("c");
+        man.putEvent("a");
+        man.putEvent("d");
+    }
+    for (auto i=0;i<500;i++)
+    {
+        man.getEvent();
+        man.giveNegativeFeedback();
+    }
+    // if we get here, great
+    return true;
+}
+
+
+bool stressPos()
+{
+    MarkovManager man{};
+    for (auto i=0;i<500;i++)
+    {
+        man.putEvent("a");
+        man.putEvent("b");
+        man.putEvent("c");
+        man.putEvent("a");
+        man.putEvent("d");
+    }
+    for (auto i=0;i<500;i++)
+    {
+        man.getEvent();
+        man.givePositiveFeedback();
+    }
+    // if we get here, great
+    return true;
+}
 
 
 void runMarkovTests()
@@ -494,162 +534,176 @@ void runMarkovTests()
     passed_tests = 0; 
     bool res = false; 
     
-    res = emptyChainReturnsNull();
-    log("emptyChainReturnsNull", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    
-    res = addOneTokenReturnOneToken();
-    log("addOneTokenReturnOneToken", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    
-    res = addSameTwoObsReturnOneObs();
-    log("addSameTwoObsReturnOneObs", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    
-    res = addSameTwoObsReturnDiffObs();
-    log("addSameTwoObsReturnDiffObs", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+        res = emptyChainReturnsNull();
+        log("emptyChainReturnsNull", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        
+        res = addOneTokenReturnOneToken();
+        log("addOneTokenReturnOneToken", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        
+        res = addSameTwoObsReturnOneObs();
+        log("addSameTwoObsReturnOneObs", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        
+        res = addSameTwoObsReturnDiffObs();
+        log("addSameTwoObsReturnDiffObs", res);
+        total_tests ++;
+        if (res) passed_tests ++;
 
-    res = returnsHighestOrder();
-    log("returnsHighestOrder", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+        res = returnsHighestOrder();
+        log("returnsHighestOrder", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        
+        res = respectsMaxOrderLow();
+        log("respectsMaxOrderLow", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+
+        res = respectsMaxOrderHigh();
+        log("respectsMaxOrderHigh", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        
+        res = addAllOrders();
+        log("addAllOrders", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        
+        res = addAllOrdersWorksWithOrder1();
+        log("addAllOrdersWorksWithOrder1", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        // 9a
+        res = addAllOrdersWorksWithOrder2();
+        log("addAllOrdersWorksWithOrder2", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        
+        // 10
+        res = breakStateIntoAllOrdersThreeOrders();
+        log("breakStateIntoAllOrdersThreeOrders", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        // 11
+        res = breakStateIntoAllOrdersThreeOrdersSize();
+        log("breakStateIntoAllOrdersThreeOrdersSize", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        // 12
+        res = breakStateIntoAllOrdersThreeOrdersContents();
+        log("breakStateIntoAllOrdersThreeOrdersContents", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+
+        //13
+        res = sequenceToStringOne();
+        log("sequenceToStringOne", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+
+        //14
+        res = sequenceToStringThree();
+        log("sequenceToStringThree", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+
+        // 15
+        res = unkownKeyUseDistribution();
+        log("unkownKeyUseDistribution", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        // 15a
+        res = unkownKeyUseDistributionMoreThanOne();
+        log("unkownKeyUseDistributionMoreThanOne", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        
+        
+        // 16
+        res = sequenceToStringMaxLength();
+        log("sequenceToStringMaxLength", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+
+        // 17
+        res = sequenceToStringMaxLengthTooLong();
+        log("sequenceToStringMaxLengthTooLong", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        //  18
+        res = sequenceToStringMaxLengthTheSame();
+        log("sequenceToStringMaxLengthTheSame", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        // 19
+        res = addStateToStateSequence();
+        log("addStateToStateSequence", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        // 20
+        res = getOutputNoData();
+        log("getOutputNoData", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+
+        // 22
+        res = variableOrderGenerate();
+        log("variableOrderGenerate", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+
+        // 23
+        res = zeroOrderSample();
+        log("zeroOrderSample", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        
+        // 24
+        res = checkLast();
+        log("checkLast", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+
+        //25   
+        res = removeStateToObs();
+        log("removeStateToObs", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
     
-    res = respectsMaxOrderLow();
-    log("respectsMaxOrderLow", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-
-    res = respectsMaxOrderHigh();
-    log("respectsMaxOrderHigh", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+        // 26
+        res = reinforceChain();
+        log("reinforceChain", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
     
-    res = addAllOrders();
-    log("addAllOrders", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    
-    res = addAllOrdersWorksWithOrder1();
-    log("addAllOrdersWorksWithOrder1", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 9a
-    res = addAllOrdersWorksWithOrder2();
-    log("addAllOrdersWorksWithOrder2", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    
-    // 10
-    res = breakStateIntoAllOrdersThreeOrders();
-    log("breakStateIntoAllOrdersThreeOrders", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 11
-    res = breakStateIntoAllOrdersThreeOrdersSize();
-    log("breakStateIntoAllOrdersThreeOrdersSize", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 12
-    res = breakStateIntoAllOrdersThreeOrdersContents();
-    log("breakStateIntoAllOrdersThreeOrdersContents", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+        // 27
+        res = negFeedback();
+        log("negFeedback", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
 
-    //13
-    res = sequenceToStringOne();
-    log("sequenceToStringOne", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+        // 28
+        res = stressNeg();
+        log("stressNeg", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
 
-    //14
-    res = sequenceToStringThree();
-    log("sequenceToStringThree", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+        // 29
+        res = stressPos();
+        log("stressPos", res);
+        total_tests ++;
+        if (res) passed_tests ++;
+        std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
 
-    // 15
-    res = unkownKeyUseDistribution();
-    log("unkownKeyUseDistribution", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 15a
-    res = unkownKeyUseDistributionMoreThanOne();
-    log("unkownKeyUseDistributionMoreThanOne", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    
-    
-    // 16
-    res = sequenceToStringMaxLength();
-    log("sequenceToStringMaxLength", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-
-    // 17
-    res = sequenceToStringMaxLengthTooLong();
-    log("sequenceToStringMaxLengthTooLong", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    //  18
-    res = sequenceToStringMaxLengthTheSame();
-    log("sequenceToStringMaxLengthTheSame", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 19
-    res = addStateToStateSequence();
-    log("addStateToStateSequence", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    // 20
-    res = getOutputNoData();
-    log("getOutputNoData", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-
-    // 22
-    res = variableOrderGenerate();
-    log("variableOrderGenerate", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-
-    // 23
-    res = zeroOrderSample();
-    log("zeroOrderSample", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    
-    // 24
-    res = checkLast();
-    log("checkLast", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-
-    //25   
-    res = removeStateToObs();
-    log("removeStateToObs", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
-  
-    // 26
-    res = reinforceChain();
-    log("reinforceChain", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
-  
-    // 27
-    res = negFeedback();
-    log("negFeedback", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-    std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
-  
 }
 
 int main(){
