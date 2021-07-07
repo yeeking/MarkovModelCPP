@@ -11,7 +11,7 @@
 #include "MarkovManager.h"
 #include <iostream>
 
-MarkovManager::MarkovManager()
+MarkovManager::MarkovManager(unsigned long chainEventMemoryLength) : maxChainEventMemory{chainEventMemoryLength}, chainEventIndex{0}
 {
   inputMemory.assign(250, "0");
   outputMemory.assign(250, "0");
@@ -41,6 +41,9 @@ state_single MarkovManager::getEvent()
   // check the output
   // update the outputMemory
   addStateToStateSequence(outputMemory, event);
+  // store the event in case we want to provide negative or positive feedback to the chain
+  // later
+  rememberChainEvent(chain.getLastMatch());
   return event; 
 }
 
@@ -57,4 +60,39 @@ void MarkovManager::addStateToStateSequence(state_sequence& seq, state_single ne
 int MarkovManager::getOrderOfLastEvent()
 {
   return chain.getOrderOfLastMatch();
+}
+
+
+void MarkovManager::rememberChainEvent(state_and_observation sObs)
+{
+  // the memory of chain events is not full yet
+  if (chainEvents.size() < maxChainEventMemory)
+  {
+    chainEvents.push_back(sObs);
+  }
+  else 
+  {
+    // the memory of chain events is full - do FIFO
+    chainEvents[chainEventIndex] = sObs;
+    chainEventIndex = (chainEventIndex + 1) % maxChainEventMemory;
+  }
+}
+
+void MarkovManager::giveNegativeFeedback()
+{
+  // remove all recently used mappings
+  for (state_and_observation& so : chainEvents)
+  {
+    chain.removeMapping(so.first, so.second);
+  }
+}
+
+
+void MarkovManager::givePositiveFeedback()
+{
+  // amplify all recently used mappings
+  for (state_and_observation& so : chainEvents)
+  {
+    chain.amplifyMapping(so.first, so.second);
+  }
 }
