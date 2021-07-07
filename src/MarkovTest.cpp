@@ -461,6 +461,32 @@ bool reinforceChain()
     return false; 
 }
 
+bool negFeedback()
+{
+    MarkovManager man{};
+    man.putEvent("a");
+    man.putEvent("b");
+    man.putEvent("c");
+    man.putEvent("d");
+    man.putEvent("c"); // loop back to c
+    
+    // now a->b->c
+    // eve will be either a,b or c I think
+    state_single eve = man.getEvent(); // should be a which is the first event
+    eve = man.getEvent(); // should be b, which is only possible follow on from a
+    // now remove the a->b transition
+    man.giveNegativeFeedback();
+    // verify that we don't get eve any more
+    for (auto i = 0;i<10;i++)
+    {
+        state_single eve2 = man.getEvent();
+        if (eve2 == eve) return false; 
+    }
+    return true; 
+}
+
+
+
 void runMarkovTests()
 {
     int total_tests, passed_tests;
@@ -613,6 +639,13 @@ void runMarkovTests()
     // 26
     res = reinforceChain();
     log("reinforceChain", res);
+    total_tests ++;
+    if (res) passed_tests ++;
+    std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
+  
+    // 27
+    res = negFeedback();
+    log("negFeedback", res);
     total_tests ++;
     if (res) passed_tests ++;
     std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
