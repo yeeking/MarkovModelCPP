@@ -14,3 +14,5 @@ g++ MarkovTest.cpp  MarkovChain.cpp MarkovManager.cpp -o markovtest
 
 You can interact with the markovmanager for a simple high level interface, 
 or with the markovchain directly. 
+
+MIT License. 
