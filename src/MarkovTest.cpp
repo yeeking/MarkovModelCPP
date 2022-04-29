@@ -627,10 +627,10 @@ bool fromStringCrash5()
 bool saveModel1()
 {
     MarkovManager man{};
-    for (auto i=0; i<10; ++i){
+    for (auto i=0; i<10000; ++i){
         man.putEvent("s_"+std::to_string(i));
     }
-    bool res = man.saveModel("test.txt");
+    bool res = man.saveModel("testbig.txt");
     return res;
 }
 bool saveModel2()
@@ -645,6 +645,7 @@ bool saveModel2()
     bool res = man.saveModel("test.txt");
     return res;
 }
+
 
 bool boostrapNoRepeats()
 {
@@ -851,53 +852,53 @@ void runMarkovTests()
     // std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
 
     // 31
-   res = toStringExists();
-    log("toStringExists", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-   // 32
-   res = toStringPosLen();
-    log("toStringPosLen", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+//    res = toStringExists();
+//     log("toStringExists", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
+//    // 32
+//    res = toStringPosLen();
+//     log("toStringPosLen", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
 
-  // 33
-   res = toStringSimple();
-    log("toStringSimple", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+//   // 33
+//    res = toStringSimple();
+//     log("toStringSimple", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
 
-  // 34
-   res = fromStringSimple();
-    log("fromStringSimple", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+//   // 34
+//    res = fromStringSimple();
+//     log("fromStringSimple", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
 
- // 35
-   res = fromStringCrash1();
-    log("fromStringCrash1", res);
-    total_tests ++;
-    if (res) passed_tests ++;
- // 36
-   res = fromStringCrash2();
-    log("fromStringCrash2", res);
-    total_tests ++;
-    if (res) passed_tests ++;
- // 37
-   res = fromStringCrash3();
-    log("fromStringCrash3", res);
-    total_tests ++;
-    if (res) passed_tests ++;
- // 38
-   res = fromStringCrash4();
-    log("fromStringCrash4", res);
-    total_tests ++;
-    if (res) passed_tests ++;
- // 39
-   res = fromStringCrash5();
-    log("fromStringCrash5", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+//  // 35
+//    res = fromStringCrash1();
+//     log("fromStringCrash1", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
+//  // 36
+//    res = fromStringCrash2();
+//     log("fromStringCrash2", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
+//  // 37
+//    res = fromStringCrash3();
+//     log("fromStringCrash3", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
+//  // 38
+//    res = fromStringCrash4();
+//     log("fromStringCrash4", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
+//  // 39
+//    res = fromStringCrash5();
+//     log("fromStringCrash5", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
  // 40
    res = saveModel1();
     log("saveModel1", res);
@@ -905,18 +906,18 @@ void runMarkovTests()
     if (res) passed_tests ++;
 
  // 41
-   res = boostrapNoRepeats();
-    log("boostrapNoRepeats", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+//    res = boostrapNoRepeats();
+//     log("boostrapNoRepeats", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
 
- // 42
-   res = saveModel2();
-    log("saveModel2", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+//  // 42
+//    res = saveModel2();
+//     log("saveModel2", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
 
-    std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
+//     std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
 
 
 

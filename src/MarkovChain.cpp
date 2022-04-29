@@ -73,7 +73,7 @@ std::vector<state_sequence>  MarkovChain::breakStateIntoAllOrders(const state_se
   // start is in the range 0-prevState.size() - 1
   long unsigned int end = prevState.size();
   allPrevs.push_back(prevState);
-  for (auto start = 1; start < end; ++start)
+  for (unsigned long int start = 1; start < end; ++start)
   {
     state_sequence::const_iterator first = prevState.begin() + start;
     state_sequence::const_iterator last = prevState.begin() + prevState.size();
@@ -252,7 +252,7 @@ bool MarkovChain::validateStateToObservationsString(const std::string& data)
 }
 bool MarkovChain::fromString(const std::string& savedModel)
 {
-  int startSize = model.size();
+  unsigned long int startSize = model.size();
   // example
   // 3,one,two,three,:1,four,five,\n
   // 2,two,three,:1,four,\n
@@ -278,12 +278,12 @@ bool MarkovChain::fromString(const std::string& savedModel)
     state_sequence prevStateFilt{};
     // check the first element is a number
     if (prevState.size() == 1) continue; // should have a number then the prev states so len at least 2
-    for (auto i=1;i<prevState.size();++i){
+    for (unsigned long i=1;i<prevState.size();++i){
       prevStateFilt.push_back(prevState[i]);
     }
     state_sequence all_obs = MarkovChain::tokenise(k_v[1], ','); // all observations following that state
     if (all_obs.size() == 1) continue; // should have a number then the actual states so len at least 2
-    for (auto i=1;i<all_obs.size();++i){ // 1 as first is no. different observations
+    for (unsigned long i=1;i<all_obs.size();++i){ // 1 as first is no. different observations
       this->addObservation(prevStateFilt, all_obs[i]);
     }
   }
@@ -375,7 +375,7 @@ state_sequence MarkovChain::getOptionsForSequenceKey(state_single seqAsKey)
 std::vector<std::string> MarkovChain::tokenise(const std::string& input, char separator)
 {
    std::vector<std::string> tokens;
-   signed int start, end;
+   long unsigned int start, end;
    std::string token;
     start = input.find_first_not_of(separator, 0);
     do{
