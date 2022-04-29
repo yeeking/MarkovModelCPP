@@ -213,8 +213,13 @@ state_single MarkovChain::pickRandomObservation(const state_sequence& seq)
 
 std::string MarkovChain::toString()
 {
-
-  return "String representation of the model here";
+  std::string s{""};
+  for(auto const& kv_pair: model){
+    s += kv_pair.first + ":";
+    s += this->stateSequenceToString(model[kv_pair.first]);
+    s += "\n";
+  }
+  return s;
 }
 
 void MarkovChain::fromString(std::string savedModel)
