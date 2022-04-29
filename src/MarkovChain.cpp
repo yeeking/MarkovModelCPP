@@ -222,9 +222,67 @@ std::string MarkovChain::toString()
   return s;
 }
 
-void MarkovChain::fromString(std::string savedModel)
+bool MarkovChain::validateStateToObservationsString(const std::string& data)
 {
+//    * super basic: minimal string is '1,a:2,b'-> length >= 7  
+  if (data.size() < 7) {
+    std::cout << "MarkovChain::validateDataString too short " << std::endl;  
+    return false; 
+  }
+//  * does it have a colon?
+  if (data.find_first_of(':') == std::string::npos) {
+    std::cout << "MarkovChain::validateDataString no colon " << std::endl;  
+    return false; 
+  }
+//  * does it have at least two commas? 
+  auto found = data.find_first_of(',');
+  int count = 0;
+  while (found!=std::string::npos)
+  {
+    count ++;
+    if (count > 1) break;
+    found=data.find_first_of(',',found+1);
+  }
+  if (count < 2){
+    std::cout << "MarkovChain::validateDataString need two commas" << std::endl;  
+    return false; 
+  }
+  return true;
 
+}
+void MarkovChain::fromString(const std::string& savedModel)
+{
+  // example
+  // 3,one,two,three,:1,four,five,\n
+  // 2,two,three,:1,four,\n
+  // -> order,state,:order,observation 1,observation n
+  // -> convert 'state' into a vector of strings (state_sequence)
+  // -> convert 'observation 1...n' to a vector of strings ["four", "five"]
+  // algo:
+  // split on lines '\n'
+  // for each line
+  // split on ':'
+  // [0] is key
+  // split [1] on ','
+  // convert first element to int (it is the number of different observations)
+  // convert the remaining elements to a string vector
+  std::vector<std::string> lines = MarkovChain::tokenise(savedModel, '\n');
+  for (const std::string& line : lines){
+    // skip invalid lines
+    if (! MarkovChain::validateStateToObservationsString(line)) continue; 
+    std::vector<std::string> k_v = MarkovChain::tokenise(line, ':');
+    state_sequence prevState = MarkovChain::tokenise(k_v[0], ',');
+    // maybe remove unwanted elements from prevState here...
+    // ... here... 
+    state_sequence prevStateFilt{};
+    for (auto i=1;i<prevState.size();++i){
+      prevStateFilt.push_back(prevState[i]);
+    }
+    state_sequence all_obs = MarkovChain::tokenise(k_v[1], ','); // all observations following that state
+    for (auto i=1;i<all_obs.size();++i){ // 1 as first is no. different observations
+      this->addObservation(prevStateFilt, all_obs[i]);
+    }
+  }
 }
 
 void MarkovChain::reset()
@@ -305,5 +363,24 @@ state_sequence MarkovChain::getOptionsForSequenceKey(state_single seqAsKey)
     // that's ok...we caught it :) 
   }
   return options; 
+}
+
+
+std::vector<std::string> MarkovChain::tokenise(const std::string& input, char separator)
+{
+   std::vector<std::string> tokens;
+   signed int start, end;
+   std::string token;
+    start = input.find_first_not_of(separator, 0);
+    do{
+        end = input.find_first_of(separator, start);
+        if (start == input.length() || start == end) break;
+        if (end >= 0) token = input.substr(start, end - start);
+        else token = input.substr(start, input.length() - start);
+        tokens.push_back(token);
+    start = end + 1;
+    }while(end > 0);
+
+   return tokens; 
 }
 

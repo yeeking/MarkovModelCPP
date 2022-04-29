@@ -95,16 +95,23 @@ class MarkovChain {
    * Picks a random observation from the sent sequence. 
    */
     state_single pickRandomObservation(const state_sequence& seq);
-     /**
-     * toString: convert the current model into a string for saving etc.
-     * @return a string that can be sent to 'fromString' to recreate the model later
-     */
+  /**
+   * toString: convert the current model into a string for saving etc.
+   * Example: 
+  * 
+  * MarkovChain m{};    m.addObservation(state_sequence{"one", "two", "three"}, "four");
+  *
+  * toString generates: 3,one,two,three,:1,four,\n"};
+  * 
+  * @return a string that can be sent to 'fromString' to recreate the model later
+  */
     std::string toString();
     /**
      * fromString: recreate the model from the sent string
      * @param savedModel: the model we want
      */
-    void fromString(std::string savedModel);
+    void fromString(const std::string& savedModel);
+
     /** Yank the chain, as it were. 
      */
     void reset();
@@ -139,6 +146,20 @@ private:
  * is derived from stateSequenceToString 
  */
     state_sequence getOptionsForSequenceKey(state_single seqAsKey);
+
+/**
+ * split the sent state string on the sent char separator 
+ * returns a vector of strings. 
+ * (here as it is needed by fromString)
+ */
+static std::vector<std::string> tokenise(const std::string& s, char separator);
+/**
+ * Checks if the sent string is suitable for parsing by fromString: 
+ * super basic: minimal string is '1,a:2,b'-> length >= 7
+ * does it have a colon?
+ * does it have at least two commas? 
+ */
+static bool validateStateToObservationsString(const std::string& s);
 /**
  * Maps from string keys to list of possible next states
  * 

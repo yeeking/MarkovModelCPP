@@ -13,6 +13,7 @@
  */
 void log(std::string test, bool result)
 {
+    std::cout << "Trying " << test << std::endl;
     std::cout << test << " : " << result << std::endl;
 }
 
@@ -570,6 +571,59 @@ bool toStringSimple()
 }
 
 
+bool fromStringSimple()
+{
+    MarkovChain m{};
+    std::string want{"3,one,two,three,:1,four,\n"};
+    m.addObservation(state_sequence{"one", "two", "three"}, "four");
+    std::string s = m.toString();
+    MarkovChain m2{};
+    m2.fromString(s);
+    std::string got = m2.toString();
+    if (got == want) return true;
+    else std::cout << "Wanted: "<<want<<" got " << got << std::endl;
+    
+    return false; 
+}
+
+
+
+bool fromStringCrash1()
+{
+    MarkovChain m{};
+    std::string s1 = "4,x,y:2,b,c"; // good
+    m.fromString(s1);
+    return true; 
+}
+bool fromStringCrash2()
+{
+    MarkovChain m{};
+    std::string s1 = "4,x,y,2,b,c"; // no colon
+    m.fromString(s1);
+    return true; 
+}
+bool fromStringCrash3()
+{
+    MarkovChain m{};
+    std::string s1 = "x:2,b,c"; // no number at start - ignores first part of state
+    m.fromString(s1);
+    return true; 
+}
+bool fromStringCrash4()
+{
+    MarkovChain m{};
+    std::string s1 = "4,x,y:b,c"; // no number at end-  ignores first next state
+    m.fromString(s1);
+    return true; 
+}
+bool fromStringCrash5()
+{
+    MarkovChain m{};
+    std::string s1 = ""; // empty string!
+    m.fromString(s1);
+    return true; 
+}
+
 void runMarkovTests()
 {
     int total_tests, passed_tests;
@@ -760,20 +814,55 @@ void runMarkovTests()
     log("toStringExists", res);
     total_tests ++;
     if (res) passed_tests ++;
-    std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
    // 32
    res = toStringPosLen();
     log("toStringPosLen", res);
     total_tests ++;
     if (res) passed_tests ++;
-    std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
 
   // 33
    res = toStringSimple();
     log("toStringSimple", res);
     total_tests ++;
     if (res) passed_tests ++;
+
+  // 34
+   res = fromStringSimple();
+    log("fromStringSimple", res);
+    total_tests ++;
+    if (res) passed_tests ++;
+
+ // 35
+   res = fromStringCrash1();
+    log("fromStringCrash1", res);
+    total_tests ++;
+    if (res) passed_tests ++;
+ // 36
+   res = fromStringCrash2();
+    log("fromStringCrash2", res);
+    total_tests ++;
+    if (res) passed_tests ++;
+ // 37
+   res = fromStringCrash3();
+    log("fromStringCrash3", res);
+    total_tests ++;
+    if (res) passed_tests ++;
+ // 38
+   res = fromStringCrash4();
+    log("fromStringCrash4", res);
+    total_tests ++;
+    if (res) passed_tests ++;
+ // 39
+   res = fromStringCrash5();
+    log("fromStringCrash5", res);
+    total_tests ++;
+    if (res) passed_tests ++;
+
+
+
     std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
+
+
 
 
 }
