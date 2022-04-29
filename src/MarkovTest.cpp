@@ -624,6 +624,47 @@ bool fromStringCrash5()
     return true; 
 }
 
+bool saveModel1()
+{
+    MarkovManager man{};
+    for (auto i=0; i<10; ++i){
+        man.putEvent("s_"+std::to_string(i));
+    }
+    bool res = man.saveModel("test.txt");
+    return res;
+}
+bool saveModel2()
+{
+    MarkovManager man{};
+    man.putEvent("a");
+    man.putEvent("b");
+    man.putEvent("c");
+    man.putEvent("d");
+    man.putEvent("e");
+        
+    bool res = man.saveModel("test.txt");
+    return res;
+}
+
+bool boostrapNoRepeats()
+{
+    // bug this tests is where the state memory of the manager 
+    // (default len 250) generates repeats in the model because 
+    // it does not ignore empty spots in the memory. 
+    // put "x" -> [empty prevState] -> x -> nothing goes to model 
+    // put "y" -> ["x"] -> y
+    // put "z" -> ["x", "y"] -> z
+    //         -> ["y"] => z
+    // so model should have three entries 
+    MarkovManager man{};
+    man.putEvent("x");
+    man.putEvent("y");
+    man.putEvent("z");
+    MarkovChain chain = man.getCopyOfModel();
+    if (chain.size() == 3) return true; 
+    else return false; 
+}
+
 void runMarkovTests()
 {
     int total_tests, passed_tests;
@@ -857,8 +898,23 @@ void runMarkovTests()
     log("fromStringCrash5", res);
     total_tests ++;
     if (res) passed_tests ++;
+ // 40
+   res = saveModel1();
+    log("saveModel1", res);
+    total_tests ++;
+    if (res) passed_tests ++;
 
+ // 41
+   res = boostrapNoRepeats();
+    log("boostrapNoRepeats", res);
+    total_tests ++;
+    if (res) passed_tests ++;
 
+ // 42
+   res = saveModel2();
+    log("saveModel2", res);
+    total_tests ++;
+    if (res) passed_tests ++;
 
     std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
 

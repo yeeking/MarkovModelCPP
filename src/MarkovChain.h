@@ -109,8 +109,9 @@ class MarkovChain {
     /**
      * fromString: recreate the model from the sent string
      * @param savedModel: the model we want
+     * returns the result: false if it failed, true if it succeeded.
      */
-    void fromString(const std::string& savedModel);
+    bool fromString(const std::string& savedModel);
 
     /** Yank the chain, as it were. 
      */
@@ -140,6 +141,12 @@ class MarkovChain {
    */
     void amplifyMapping(state_single state_key, state_single unwanted_option);
     
+    /** return number of observations in the chain*/
+    long size();
+
+    /** checks if the sent state sequence is valid. i.e. does it contain blanks : "0" */
+    bool validateStateSequence(const state_sequence& seq);
+
 private:
 /**
  * returns the available states that follow the sent key, where the sent key 

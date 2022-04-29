@@ -30,6 +30,11 @@ void MarkovChain::addObservation(const state_sequence& prevState, state_single c
     //throw "MarkovChain::addObservation observation 0 is reserved";
   }
   // convert the previous state to a CSV style key
+  if (!validateStateSequence(prevState)) 
+  {
+    //std::cout << "MarkovChain::addObservation invalid prev state " << std::endl;
+    return; 
+  }
   state_single key = stateSequenceToString(prevState);
   // do we have this key already
   bool have_key = true;
@@ -57,6 +62,7 @@ void MarkovChain::addObservationAllOrders(const state_sequence& prevState, state
   std::vector<state_sequence> allPrevs = breakStateIntoAllOrders(prevState);
   for (state_sequence& seq : allPrevs)
   {
+    //std::cout << "MarkovChain::addObservationAllOrders adding obs for " << this->stateSequenceToString(seq) << " to " << currentState <<  std::endl; 
     addObservation(seq, currentState);
   } 
 }
@@ -67,7 +73,7 @@ std::vector<state_sequence>  MarkovChain::breakStateIntoAllOrders(const state_se
   // start is in the range 0-prevState.size() - 1
   long unsigned int end = prevState.size();
   allPrevs.push_back(prevState);
-  for (long unsigned int start = 1; start < end; start ++)
+  for (auto start = 1; start < end; ++start)
   {
     state_sequence::const_iterator first = prevState.begin() + start;
     state_sequence::const_iterator last = prevState.begin() + prevState.size();
@@ -82,17 +88,10 @@ std::string MarkovChain::stateSequenceToString(const state_sequence& sequence)
 {
   std::string str = std::to_string(sequence.size()); // write the order first
   str.append(",");
-  // prefix it with the order
   for (const state_single& s : sequence)
   {
-    if (s != "0")// ignore blank states
-    {
       str.append(s);
       str.append(",");  
-    } 
-    // else {
-    //   std::cout << "stateSequenceToString blank state ignored " << str << std::endl;
-    // }
   } 
   return str;
 }
@@ -213,6 +212,7 @@ state_single MarkovChain::pickRandomObservation(const state_sequence& seq)
 
 std::string MarkovChain::toString()
 {
+  std::cout << "MarkovChain::toString model size " << model.size() << std::endl;
   std::string s{""};
   for(auto const& kv_pair: model){
     s += kv_pair.first + ":";
@@ -250,8 +250,9 @@ bool MarkovChain::validateStateToObservationsString(const std::string& data)
   return true;
 
 }
-void MarkovChain::fromString(const std::string& savedModel)
+bool MarkovChain::fromString(const std::string& savedModel)
 {
+  int startSize = model.size();
   // example
   // 3,one,two,three,:1,four,five,\n
   // 2,two,three,:1,four,\n
@@ -275,14 +276,19 @@ void MarkovChain::fromString(const std::string& savedModel)
     // maybe remove unwanted elements from prevState here...
     // ... here... 
     state_sequence prevStateFilt{};
+    // check the first element is a number
+    if (prevState.size() == 1) continue; // should have a number then the prev states so len at least 2
     for (auto i=1;i<prevState.size();++i){
       prevStateFilt.push_back(prevState[i]);
     }
     state_sequence all_obs = MarkovChain::tokenise(k_v[1], ','); // all observations following that state
+    if (all_obs.size() == 1) continue; // should have a number then the actual states so len at least 2
     for (auto i=1;i<all_obs.size();++i){ // 1 as first is no. different observations
       this->addObservation(prevStateFilt, all_obs[i]);
     }
   }
+  if (model.size() > startSize ) return true;
+  else return false; 
 }
 
 void MarkovChain::reset()
@@ -383,4 +389,22 @@ std::vector<std::string> MarkovChain::tokenise(const std::string& input, char se
 
    return tokens; 
 }
+
+long MarkovChain::size()
+{
+  return model.size();
+}
+
+bool MarkovChain::validateStateSequence(const state_sequence& seq)
+{
+  if (seq.size() == 0) return false; 
+  for (const state_single& s : seq)
+  {
+    if (s == "0") // blank state - this state sequence is not useable 
+      return false;
+  } 
+  return true;
+  
+}
+
 

@@ -56,11 +56,18 @@ class MarkovManager {
       void givePositiveFeedback();
        
       /**
-       * save the model to the sent file. uses modelToString to first
+       * convenience function to save the model to the sent file. uses model.toString to first
        * convert it to a file
        */
-      bool saveModel(std::string filename);
+      bool saveModel(const std::string& filename);
+       /**
+       * convenience function to  load the model to the sent file. uses model.fromString to first
+       * convert it to a file
+       */
+      bool loadModel(const std::string& filename);
 
+      /** returns a copy of the model */
+      MarkovChain getCopyOfModel();
   private:
       void rememberChainEvent(state_and_observation event);
 

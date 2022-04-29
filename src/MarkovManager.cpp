@@ -10,6 +10,8 @@
 
 #include "MarkovManager.h"
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 MarkovManager::MarkovManager(unsigned long chainEventMemoryLength) : maxChainEventMemory{chainEventMemoryLength}, chainEventIndex{0}
 {
@@ -30,6 +32,8 @@ void MarkovManager::reset()
 void MarkovManager::putEvent(state_single event)
 {
   // add the observation to the markov 
+  // note that when we are boostrapping, i.e. filling up the input memory
+  // we should not pass states in that include the "0"
   chain.addObservationAllOrders(inputMemory, event);
   // update the input memory
   addStateToStateSequence(inputMemory, event);
@@ -95,4 +99,39 @@ void MarkovManager::givePositiveFeedback()
   {
     chain.amplifyMapping(so.first, so.second);
   }
+}
+
+bool MarkovManager::loadModel(const std::string& filename)
+{
+
+  if (std::ifstream in {filename})
+  {
+    std::ostringstream sstr{};
+    sstr << in.rdbuf();
+    std::string data = sstr.str();
+    in.close();
+    return chain.fromString(data);
+  }
+  else {
+    std::cout << "MarkovManager::loadModel failed to load from file " << filename << std::endl;
+    return false; 
+  }
+}
+
+bool MarkovManager::saveModel(const std::string& filename)
+{
+    if (std::ofstream ofs{filename}){
+      ofs << chain.toString();
+      ofs.close();
+      return true; 
+    }
+    else {
+      std::cout << "MarkovManager::saveModel failed to save to file " << filename << std::endl;
+      return false; 
+    }
+}
+
+MarkovChain MarkovManager::getCopyOfModel()
+{
+  return chain;
 }
