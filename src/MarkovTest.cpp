@@ -605,7 +605,7 @@ bool fromStringCrash2()
 bool fromStringCrash3()
 {
     MarkovChain m{};
-    std::string s1 = "x:2,b,c"; // no number at start - ignores first part of state
+    std::string s1 = "x:2,b"; // no number at start - ignores first part of state
     m.fromString(s1);
     return true; 
 }
