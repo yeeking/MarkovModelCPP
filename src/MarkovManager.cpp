@@ -136,6 +136,10 @@ std::string MarkovManager::getModelAsString()
   return chain.toString();
 }
 
+bool MarkovManager::setupModelFromString(std::string modelData)
+{
+  return chain.fromString(modelData);
+}
 
 MarkovChain MarkovManager::getCopyOfModel()
 {

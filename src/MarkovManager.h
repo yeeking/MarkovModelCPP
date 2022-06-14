@@ -70,6 +70,8 @@ class MarkovManager {
        * in case you don't want to use saveModel directly
       */
       std::string getModelAsString();
+      /** tries to convert the sent string into a model by calling model.fromString */
+      bool setupModelFromString(std::string);
 
 
       /** returns a copy of the model */
