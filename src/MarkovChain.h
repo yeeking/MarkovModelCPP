@@ -147,6 +147,13 @@ class MarkovChain {
     /** checks if the sent state sequence is valid. i.e. does it contain blanks : "0" */
     bool validateStateSequence(const state_sequence& seq);
 
+  /**
+   * split the sent state string on the sent char separator 
+   * returns a vector of strings. 
+   * (here as it is needed by fromString)
+   */
+    static std::vector<std::string> tokenise(const std::string& s, char separator);
+
 private:
 /**
  * returns the available states that follow the sent key, where the sent key 
@@ -154,12 +161,6 @@ private:
  */
     state_sequence getOptionsForSequenceKey(state_single seqAsKey);
 
-/**
- * split the sent state string on the sent char separator 
- * returns a vector of strings. 
- * (here as it is needed by fromString)
- */
-static std::vector<std::string> tokenise(const std::string& s, char separator);
 /**
  * Checks if the sent string is suitable for parsing by fromString: 
  * super basic: minimal string is '1,a:2,b'-> length >= 7
