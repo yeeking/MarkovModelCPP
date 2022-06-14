@@ -131,6 +131,12 @@ bool MarkovManager::saveModel(const std::string& filename)
     }
 }
 
+std::string MarkovManager::getModelAsString()
+{
+  return chain.toString();
+}
+
+
 MarkovChain MarkovManager::getCopyOfModel()
 {
   return chain;

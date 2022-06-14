@@ -66,6 +66,12 @@ class MarkovManager {
        */
       bool loadModel(const std::string& filename);
 
+      /** returns a string representation of the model suitable for saving
+       * in case you don't want to use saveModel directly
+      */
+      std::string getModelAsString();
+
+
       /** returns a copy of the model */
       MarkovChain getCopyOfModel();
   private:
