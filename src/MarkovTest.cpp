@@ -646,6 +646,36 @@ bool saveModel2()
     return res;
 }
 
+bool loadModel1()
+{
+    MarkovManager man{};
+    man.putEvent("a");
+    man.putEvent("b");
+    man.putEvent("c");
+    man.putEvent("d");
+    man.putEvent("e");
+    man.saveModel("test.txt");
+    //bool res = man.loadModel("midi_model.txt");
+    bool res = man.loadModel("test.txt");
+
+    return res;
+}
+
+bool loadModel2()
+{
+    MarkovManager man{};
+    man.putEvent("a");
+    man.putEvent("b");
+    man.putEvent("c");
+    man.putEvent("d");
+    man.putEvent("e");
+    std::string before = man.getModelAsString();
+    man.saveModel("test.txt");
+    //bool res = man.loadModel("midi_model.txt");
+    man.loadModel("test.txt");
+    std::string after = man.getModelAsString();
+    return after == before; 
+}
 
 bool boostrapNoRepeats()
 {
@@ -664,6 +694,14 @@ bool boostrapNoRepeats()
     MarkovChain chain = man.getCopyOfModel();
     if (chain.size() == 3) return true; 
     else return false; 
+}
+
+bool tokenise1()
+{
+    std::string line {"1,a,:1,b,"};
+    state_sequence parts = MarkovChain::tokenise(line, ':');
+    if (parts.size() == 2) return true;
+    return false; 
 }
 
 void runMarkovTests()
@@ -900,10 +938,10 @@ void runMarkovTests()
 //     total_tests ++;
 //     if (res) passed_tests ++;
  // 40
-   res = saveModel1();
-    log("saveModel1", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+//    res = saveModel1();
+//     log("saveModel1", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
 
  // 41
 //    res = boostrapNoRepeats();
@@ -919,9 +957,22 @@ void runMarkovTests()
 
 //     std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
 
+ // 43
+   res = loadModel1();
+    log("loadModel1", res);
+    total_tests ++;
+    if (res) passed_tests ++;
+// 44
+   res = tokenise1();
+    log("tokenise1", res);
+    total_tests ++;
+    if (res) passed_tests ++;
 
-
-
+// 45
+   res = saveModel2();
+    log("saveModel2", res);
+    total_tests ++;
+    if (res) passed_tests ++;
 }
 
 int main(){

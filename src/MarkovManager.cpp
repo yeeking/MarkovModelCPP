@@ -103,7 +103,6 @@ void MarkovManager::givePositiveFeedback()
 
 bool MarkovManager::loadModel(const std::string& filename)
 {
-
   if (std::ifstream in {filename})
   {
     std::ostringstream sstr{};
@@ -113,7 +112,6 @@ bool MarkovManager::loadModel(const std::string& filename)
     return chain.fromString(data);
   }
   else {
-    std::cout << "MarkovManager::loadModel failed to load from file " << filename << std::endl;
     return false; 
   }
 }

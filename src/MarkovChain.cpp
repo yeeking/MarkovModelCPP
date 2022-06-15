@@ -252,7 +252,7 @@ bool MarkovChain::validateStateToObservationsString(const std::string& data)
 }
 bool MarkovChain::fromString(const std::string& savedModel)
 {
-  unsigned long int startSize = model.size();
+  //unsigned long int startSize = model.size();
   // example
   // 3,one,two,three,:1,four,five,\n
   // 2,two,three,:1,four,\n
@@ -269,15 +269,22 @@ bool MarkovChain::fromString(const std::string& savedModel)
   // convert the remaining elements to a string vector
   std::vector<std::string> lines = MarkovChain::tokenise(savedModel, '\n');
   for (const std::string& line : lines){
+    //std::cout << "MarkovChain::fromString processing line " << line << std::endl; 
+
     // skip invalid lines
     if (! MarkovChain::validateStateToObservationsString(line)) continue; 
+    //std::cout << "MarkovChain::fromString line valid. tokenising on ':'" << line << std::endl; 
+
     std::vector<std::string> k_v = MarkovChain::tokenise(line, ':');
+    //std::cout << "MarkovChain::fromString tokenised line to " << k_v[0] << " and " << k_v[1] << " getting prev state "<< std::endl; 
     state_sequence prevState = MarkovChain::tokenise(k_v[0], ',');
     // maybe remove unwanted elements from prevState here...
     // ... here... 
     state_sequence prevStateFilt{};
     // check the first element is a number
     if (prevState.size() == 1) continue; // should have a number then the prev states so len at least 2
+    //std::cout << "MarkovChain::fromString building prev state. size is " << prevState.size() << std::endl; 
+
     for (unsigned long i=1;i<prevState.size();++i){
       prevStateFilt.push_back(prevState[i]);
     }
@@ -287,8 +294,10 @@ bool MarkovChain::fromString(const std::string& savedModel)
       this->addObservation(prevStateFilt, all_obs[i]);
     }
   }
-  if (model.size() > startSize ) return true;
-  else return false; 
+  // at this point, we hope something was loaded. if the file was invalid, meh
+  return true;
+  //if (model.size() > startSize ) return true;
+  //else return false; 
 }
 
 void MarkovChain::reset()
@@ -379,13 +388,15 @@ std::vector<std::string> MarkovChain::tokenise(const std::string& input, char se
    std::string token;
     start = input.find_first_not_of(separator, 0);
     do{
-        end = input.find_first_of(separator, start);
-        if (start == input.length() || start == end) break;
-        if (end >= 0) token = input.substr(start, end - start);
-        else token = input.substr(start, input.length() - start);
-        tokens.push_back(token);
+      end = input.find_first_of(separator, start);
+      if (start == input.length() || start == end) break;
+      if (end >= 0) token = input.substr(start, end - start);
+      else token = input.substr(start, input.length() - start);
+      tokens.push_back(token);
     start = end + 1;
-    }while(end > 0);
+    //}while(end > 0);
+    // at some point it needed to be npos
+    }while(end != std::string::npos);
 
    return tokens; 
 }
