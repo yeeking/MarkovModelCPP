@@ -31,24 +31,33 @@ void MarkovManager::reset()
 }
 void MarkovManager::putEvent(state_single event)
 {
+  try{
   // add the observation to the markov 
   // note that when we are boostrapping, i.e. filling up the input memory
   // we should not pass states in that include the "0"
   chain.addObservationAllOrders(inputMemory, event);
   // update the input memory
   addStateToStateSequence(inputMemory, event);
+  }catch(...){// put this here as my JUCE thing crashes due to lack of thread-safeness
+    std::cout << "MarkovManager::putEvent crashed... catching" << std::endl;
+  }
 }
 state_single MarkovManager::getEvent()
 {
-  // get an observation
-  state_single event = chain.generateObservation(outputMemory, 100);
-  // check the output
-  // update the outputMemory
-  addStateToStateSequence(outputMemory, event);
-  // store the event in case we want to provide negative or positive feedback to the chain
-  // later
-  rememberChainEvent(chain.getLastMatch());
-  return event; 
+  try{
+    // get an observation
+    state_single event = chain.generateObservation(outputMemory, 100);
+    // check the output
+    // update the outputMemory
+    addStateToStateSequence(outputMemory, event);
+    // store the event in case we want to provide negative or positive feedback to the chain
+    // later
+    rememberChainEvent(chain.getLastMatch());
+    return event; 
+  }catch(...){// put this here as my JUCE thing crashes due to lack of thread-safeness
+    std::cout << "MarkovManager::getEvent crashed... catching" << std::endl;
+    return "0";
+  }
 }
 
 void MarkovManager::addStateToStateSequence(state_sequence& seq, state_single new_state){
