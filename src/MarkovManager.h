@@ -85,5 +85,6 @@ class MarkovManager {
       std::vector<state_and_observation> chainEvents;
       unsigned long  maxChainEventMemory;
       unsigned long  chainEventIndex;
+      bool locked;
 };
 

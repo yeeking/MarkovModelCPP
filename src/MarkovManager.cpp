@@ -12,8 +12,13 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <chrono>
+#include <thread>
 
-MarkovManager::MarkovManager(unsigned long chainEventMemoryLength) : maxChainEventMemory{chainEventMemoryLength}, chainEventIndex{0}
+MarkovManager::MarkovManager(unsigned long chainEventMemoryLength) 
+  : maxChainEventMemory{chainEventMemoryLength}, 
+  chainEventIndex{0}, 
+  locked{false}
 {
   inputMemory.assign(250, "0");
   outputMemory.assign(250, "0");
@@ -25,12 +30,27 @@ MarkovManager::~MarkovManager()
 }
 void MarkovManager::reset()
 {
-    inputMemory.assign(250, "0");
-    outputMemory.assign(250, "0");
-    chain.reset();
+  std::cout << "MarkovManager::reset waiting" << std::endl;
+
+  while(locked) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+  std::cout << "MarkovManager::reset locking" << std::endl;
+
+  locked = true;
+  inputMemory.assign(250, "0");
+  outputMemory.assign(250, "0");
+  chain.reset();
+  std::cout << "MarkovManager::reset unlocking" << std::endl;
+  
+  locked = false; 
 }
 void MarkovManager::putEvent(state_single event)
 {
+  std::cout << "MarkovManager::putEvent waiting" << std::endl;
+  while(locked) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  std::cout << "MarkovManager::putEvent locking" << std::endl;
+  
+  locked = true;
   try{
   // add the observation to the markov 
   // note that when we are boostrapping, i.e. filling up the input memory
@@ -41,23 +61,42 @@ void MarkovManager::putEvent(state_single event)
   }catch(...){// put this here as my JUCE thing crashes due to lack of thread-safeness
     std::cout << "MarkovManager::putEvent crashed... catching" << std::endl;
   }
+  
+  std::cout << "MarkovManager::putEvent unlocking" << std::endl;
+  locked = false; 
 }
 state_single MarkovManager::getEvent()
 {
+  std::cout << "MarkovManager::getEvent waiting" << std::endl;
+  state_single event{""};
+  while(locked) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  std::cout << "MarkovManager::getEvent locking" << std::endl;
+
+  locked = true; 
   try{
+    std::cout << "MarkovManager::getEvent in try" << std::endl;
+
     // get an observation
-    state_single event = chain.generateObservation(outputMemory, 100);
+    event = chain.generateObservation(outputMemory, 100);
+    std::cout << "MarkovManager::getEvent got obs " << event << std::endl;
+
     // check the output
     // update the outputMemory
     addStateToStateSequence(outputMemory, event);
+      std::cout << "MarkovManager::getEvent updated mem"  << std::endl;
+
     // store the event in case we want to provide negative or positive feedback to the chain
     // later
     rememberChainEvent(chain.getLastMatch());
-    return event; 
+      std::cout << "MarkovManager::getEvent stored for later delete returning..."  << std::endl;
+
   }catch(...){// put this here as my JUCE thing crashes due to lack of thread-safeness
     std::cout << "MarkovManager::getEvent crashed... catching" << std::endl;
-    return "0";
+    event = "0";
   }
+  std::cout << "MarkovManager::getEvent unlocking" << std::endl;
+  locked = false; 
+  return event;
 }
 
 void MarkovManager::addStateToStateSequence(state_sequence& seq, state_single new_state){

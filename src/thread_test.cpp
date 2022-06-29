@@ -27,7 +27,7 @@ void updater(int id)
     //for (auto i=0;i<10000;i++)
     while(true)
     {   
-        ++i;
+        i = i % 1000;
         poll("update start");
         std::this_thread::sleep_for(std::chrono::milliseconds(3));
         man.putEvent(std::to_string(id) + std::to_string(i));
@@ -44,7 +44,8 @@ void resetter(int id)
         poll("reset start");
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         man.reset();  
-        poll("reset end");
+        setupMarkov();
+        poll("reset en=======");
         
     }
 }
