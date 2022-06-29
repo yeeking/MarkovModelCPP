@@ -12,8 +12,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <chrono>
-#include <thread>
 
 MarkovManager::MarkovManager(unsigned long chainEventMemoryLength) 
   : maxChainEventMemory{chainEventMemoryLength}, 
@@ -31,26 +29,21 @@ MarkovManager::~MarkovManager()
 void MarkovManager::reset()
 {
   std::cout << "MarkovManager::reset waiting" << std::endl;
-
-  while(locked) std::this_thread::sleep_for(std::chrono::milliseconds(2));
-
+  mtx.lock();
+  
   std::cout << "MarkovManager::reset locking" << std::endl;
-
-  locked = true;
   inputMemory.assign(250, "0");
   outputMemory.assign(250, "0");
   chain.reset();
   std::cout << "MarkovManager::reset unlocking" << std::endl;
-  
-  locked = false; 
+  mtx.unlock();
 }
 void MarkovManager::putEvent(state_single event)
 {
   std::cout << "MarkovManager::putEvent waiting" << std::endl;
-  while(locked) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  mtx.lock();
   std::cout << "MarkovManager::putEvent locking" << std::endl;
   
-  locked = true;
   try{
   // add the observation to the markov 
   // note that when we are boostrapping, i.e. filling up the input memory
@@ -63,16 +56,17 @@ void MarkovManager::putEvent(state_single event)
   }
   
   std::cout << "MarkovManager::putEvent unlocking" << std::endl;
-  locked = false; 
+  mtx.unlock();
 }
 state_single MarkovManager::getEvent()
 {
-  std::cout << "MarkovManager::getEvent waiting" << std::endl;
   state_single event{""};
-  while(locked) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+  std::cout << "MarkovManager::getEvent waiting" << std::endl;
   std::cout << "MarkovManager::getEvent locking" << std::endl;
 
-  locked = true; 
+  mtx.lock();
+
   try{
     std::cout << "MarkovManager::getEvent in try" << std::endl;
 
@@ -95,7 +89,7 @@ state_single MarkovManager::getEvent()
     event = "0";
   }
   std::cout << "MarkovManager::getEvent unlocking" << std::endl;
-  locked = false; 
+  mtx.unlock();
   return event;
 }
 

@@ -10,6 +10,8 @@
 
 #pragma once
 #include "MarkovChain.h"
+#include <mutex>
+
 
 /**
  * Manages a markov chain for training and generation purposes
@@ -86,5 +88,6 @@ class MarkovManager {
       unsigned long  maxChainEventMemory;
       unsigned long  chainEventIndex;
       bool locked;
+      std::mutex mtx;
 };
 
