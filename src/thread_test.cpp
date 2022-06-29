@@ -9,7 +9,7 @@ MarkovManager man;
 
 void setupMarkov()
 {
-    for (auto i=0;i<1000;i++)
+    for (auto i=0;i<100;i++)
     {   
 
         man.putEvent(std::to_string(i% 101) + std::to_string(i));
@@ -42,7 +42,7 @@ void resetter(int id)
     while(true)
     {   
         poll("reset start");
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
         man.reset();  
         setupMarkov();
         poll("reset en=======");
