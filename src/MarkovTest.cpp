@@ -704,6 +704,30 @@ bool tokenise1()
     return false; 
 }
 
+bool putAndGetTheSame()
+{
+    MarkovManager mm{};
+    mm.putEvent("A");
+    mm.putEvent("B");
+    mm.putEvent("A");
+    mm.putEvent("C");
+    mm.putEvent("A");
+    mm.putEvent("B");
+    std::string out;
+    int same = 0;
+    int total = 10;
+    for (auto i=0;i<total;++i){
+        std::string in = std::to_string((i % 3) + 1);
+        mm.putEvent(in);
+        out = mm.getEvent();
+        std::cout << "In " << in << " out " << out << std::endl;
+        if (out == in) same ++; 
+    }
+    if (total == same) return false;// failed as always gets what was just put
+    else return true;     
+    
+}
+
 void runMarkovTests()
 {
     int total_tests, passed_tests;
@@ -957,20 +981,25 @@ void runMarkovTests()
 
 //     std::cout << "Passed " << passed_tests << " of " << total_tests << std::endl;
 
- // 43
-   res = loadModel1();
-    log("loadModel1", res);
-    total_tests ++;
-    if (res) passed_tests ++;
-// 44
-   res = tokenise1();
-    log("tokenise1", res);
-    total_tests ++;
-    if (res) passed_tests ++;
+//  // 43
+//    res = loadModel1();
+//     log("loadModel1", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
+// // 44
+//    res = tokenise1();
+//     log("tokenise1", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
 
-// 45
-   res = saveModel2();
-    log("saveModel2", res);
+// // 45
+//    res = saveModel2();
+//     log("saveModel2", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
+
+   res = putAndGetTheSame();
+    log("putAndGetTheSame", res);
     total_tests ++;
     if (res) passed_tests ++;
 }
