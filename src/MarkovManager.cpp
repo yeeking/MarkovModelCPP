@@ -13,13 +13,13 @@
 #include <fstream>
 #include <sstream>
 
-MarkovManager::MarkovManager(unsigned long chainEventMemoryLength) 
+MarkovManager::MarkovManager(unsigned long maxOrder, unsigned long chainEventMemoryLength) 
   : maxChainEventMemory{chainEventMemoryLength}, 
   chainEventIndex{0}, 
   locked{false}
 {
-  inputMemory.assign(5, "0");
-  outputMemory.assign(5, "0");
+  inputMemory.assign(maxOrder, "0");
+  outputMemory.assign(maxOrder, "0");
   
 }
 MarkovManager::~MarkovManager()
@@ -29,8 +29,8 @@ MarkovManager::~MarkovManager()
 void MarkovManager::reset()
 {
   mtx.lock();  
-  inputMemory.assign(250, "0");
-  outputMemory.assign(250, "0");
+  inputMemory.assign(inputMemory.size(), "0");
+  outputMemory.assign(outputMemory.size(), "0");
   chain.reset();
   mtx.unlock();
 }

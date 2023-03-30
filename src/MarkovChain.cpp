@@ -12,7 +12,7 @@
 #include <iostream>
 #include <ctime>
 
-MarkovChain::MarkovChain() : maxOrder{1000}, orderOfLastMatch{0}
+MarkovChain::MarkovChain(unsigned long  _maxOrder) : maxOrder{_maxOrder}, orderOfLastMatch{0}
 {
   srand((int)time(NULL));
 }

@@ -24,7 +24,7 @@ typedef std::pair<state_single, state_single> state_and_observation;
  */
 class MarkovChain {
   public:
-    MarkovChain();
+    MarkovChain(unsigned long _maxOrder=100);
     ~MarkovChain();
     /** 
      * addObservation
@@ -174,7 +174,7 @@ static bool validateStateToObservationsString(const std::string& s);
  * 
  */
     std::map<state_single,state_sequence> model;
-    int maxOrder; 
-    int orderOfLastMatch;
+    unsigned long maxOrder; 
+    unsigned long orderOfLastMatch;
     state_and_observation lastMatch;
 };

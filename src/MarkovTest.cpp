@@ -734,7 +734,7 @@ bool allSame(){
     std::string out{};
     int same = 0;
     int max = 5;// 
-   // std::string ins[] = {"A", "B", "C", "D", "E", "B"};
+    // std::string ins[] = {"A", "B", "C", "D", "E", "B"};
    std::string ins[] = {"A", "B", "A", "C", "A", "D"};
     for (auto i=0;i<6;++i){
         markovModel.putEvent(ins[i]);
@@ -744,7 +744,7 @@ bool allSame(){
             std::cout << "Same " << ins[i] << ":" << out << std::endl;
         }
     }
-    if (same == max) return false;
+    if (same == max) return false; // might fail sometimes :(
     else return true; 
 }
 
