@@ -31,8 +31,9 @@ class MarkovManager {
       void putEvent(state_single symbol);
       /**
       * retrieve an event from the underlying markov model. 
+      * @param needChoices: if true, requires that the underlying model only selects states which have at least two observations for them
       */
-      state_single getEvent();
+      state_single getEvent(bool needChoices = false);
       /**
        * returns the order of the model that generated the last event 
        * calls 

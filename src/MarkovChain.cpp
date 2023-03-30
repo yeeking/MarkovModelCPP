@@ -26,7 +26,7 @@ void MarkovChain::addObservation(const state_sequence& prevState, state_single c
 {
   if (currentState == "0")
   {
-    std::cout << "MarkovChain::addObservation received invalid state. Ignoring it " << currentState << std::endl;
+    //std::cout << "MarkovChain::addObservation received invalid state. Ignoring it " << currentState << std::endl;
     //throw "MarkovChain::addObservation observation 0 is reserved";
   }
   // convert the previous state to a CSV style key
@@ -122,23 +122,32 @@ std::string MarkovChain::stateSequenceToString(const state_sequence& sequence, l
   }
 }
 
-state_single MarkovChain::generateObservation(const state_sequence& prevState, int maxOrder)
+state_single MarkovChain::generateObservation(const state_sequence& prevState, int maxOrderWanted, bool needChoice)
 {
   // check for empty model
   if (model.size() == 0)
   {
-    //std::cout << "warning - requested obs from empty model " << std::endl;
+    std::cout << "warning - requested obs from empty model " << std::endl;
     return "0";
   }
   // don't allow orders beyond our own maxOrder
-  if (maxOrder > this->maxOrder) maxOrder = this->maxOrder;
+  if (maxOrderWanted > this->maxOrder) maxOrderWanted = this->maxOrder;
   // attempt to find a key in the chain that matches the incoming prevState
-  state_single key = stateSequenceToString(prevState, maxOrder);
+  state_single key = stateSequenceToString(prevState, maxOrderWanted);
   state_sequence poss_next_states{};
   bool have_key = true;
+  // bad boy using exception handling for control flow. live on the edge! 
   try
   {
     poss_next_states = model.at(key);
+    //std::cout << "MarkovChain::generateObservation want choice " << needChoice << "  got choices" << poss_next_states.size() << std::endl;
+    
+    // now if the caller demanded choices, we need to check there are choices
+    if (needChoice && poss_next_states.size() < 2) { // want choice, none there
+      //std::cout << "MarkovChain::generateObservation want choice but only " << poss_next_states.size() << " going lower order than " << maxOrderWanted << std::endl;
+      have_key = false; 
+    }
+
   }
   catch (const std::out_of_range& oor)
   {
@@ -146,24 +155,26 @@ state_single MarkovChain::generateObservation(const state_sequence& prevState, i
   }
   if (have_key)
   {
-    // get a random numner
+    // get a random choice from the available ones 
+    //std::cout << "MarkovChain::generateObservation key: '" << key << "' Got possible next states " << poss_next_states.size() << std::endl;
     state_single obs = pickRandomObservation(poss_next_states);
     // remember what we did
-    this->orderOfLastMatch = maxOrder; 
+    this->orderOfLastMatch = maxOrderWanted; 
     this->lastMatch = state_and_observation{key, obs};
     return obs; 
   }
   else {
-    //std::cout << "MarkovChain::generateObservation no match for that key " << key << "  at order " << maxOrder << std::endl;
-    if (maxOrder > 1) 
+    //std::cout << "MarkovChain::generateObservation no match for that key " << key << "  at order " << maxOrderWanted << std::endl;
+    if (maxOrderWanted > 1) 
     {
       //std::cout << "no match, reducing order to " << maxOrder - 1 << std::endl;
       // recurse with lower max order
-      return generateObservation(prevState, maxOrder-1);
+      return generateObservation(prevState, maxOrderWanted-1, needChoice);
     }
     else {
       // worst case - nothing at higher than zero order
       this->orderOfLastMatch = 0;
+      //std::cout << "MarkovChain::generateObservation no match for " << key << " doing zero order " << std::endl;
       state_single obs = zeroOrderSample();
       this->lastMatch = state_and_observation{"0", obs};
       return obs; 
@@ -178,6 +189,7 @@ state_single MarkovChain::zeroOrderSample()
   // no key - choose something at random from all next observed states
   int randInd = 0;
   if (model.size() > 1) randInd = rand() % model.size();
+  //std::cout << "MarkovChain::zeroOrderSample rand " << randInd << " from " << model.size() << std::endl; 
   int ind = 0;
   state_single state = "0"; // start on the default state
   // iterate the map until we teach our random index
@@ -212,7 +224,7 @@ state_single MarkovChain::pickRandomObservation(const state_sequence& seq)
 
 std::string MarkovChain::toString()
 {
-  std::cout << "MarkovChain::toString model size " << model.size() << std::endl;
+  //std::cout << "MarkovChain::toString model size " << model.size() << std::endl;
   std::string s{""};
   for(auto const& kv_pair: model){
     s += kv_pair.first + ":";

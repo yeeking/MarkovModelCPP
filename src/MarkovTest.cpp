@@ -728,6 +728,26 @@ bool putAndGetTheSame()
     
 }
 
+bool allSame(){
+    MarkovManager markovModel{};
+
+    std::string out{};
+    int same = 0;
+    int max = 5;// 
+   // std::string ins[] = {"A", "B", "C", "D", "E", "B"};
+   std::string ins[] = {"A", "B", "A", "C", "A", "D"};
+    for (auto i=0;i<6;++i){
+        markovModel.putEvent(ins[i]);
+        out = markovModel.getEvent(true);
+        if (out == ins[i]){
+            same ++;
+            std::cout << "Same " << ins[i] << ":" << out << std::endl;
+        }
+    }
+    if (same == max) return false;
+    else return true; 
+}
+
 void runMarkovTests()
 {
     int total_tests, passed_tests;
@@ -998,7 +1018,12 @@ void runMarkovTests()
 //     total_tests ++;
 //     if (res) passed_tests ++;
 
-   res = putAndGetTheSame();
+//    res = putAndGetTheSame();
+//     log("putAndGetTheSame", res);
+//     total_tests ++;
+//     if (res) passed_tests ++;
+
+       res = allSame();
     log("putAndGetTheSame", res);
     total_tests ++;
     if (res) passed_tests ++;

@@ -86,11 +86,12 @@ class MarkovChain {
      * 
      * @param prevState - the lookup state used to query the model
      * @param maxOrder - how much of the previous state to consider. 
+     * @param needChoice: set to true and it will always try and return from a lookup which yields at least two choices. This means it will often return at zero order when bootstrapping
      * It will try to query at this ordder, but if nothing is there, it'll
      * reduce the order until the query returns something.
      * @return a state sampled from the model
      */
-    state_single generateObservation(const state_sequence& prevState, int maxOrder);
+    state_single generateObservation(const state_sequence& prevState, int maxOrderWanted, bool needChoice=false);
   /**
    * Picks a random observation from the sent sequence. 
    */

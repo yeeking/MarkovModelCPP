@@ -18,8 +18,8 @@ MarkovManager::MarkovManager(unsigned long chainEventMemoryLength)
   chainEventIndex{0}, 
   locked{false}
 {
-  inputMemory.assign(250, "0");
-  outputMemory.assign(250, "0");
+  inputMemory.assign(5, "0");
+  outputMemory.assign(5, "0");
   
 }
 MarkovManager::~MarkovManager()
@@ -49,14 +49,14 @@ void MarkovManager::putEvent(state_single event)
   }  
   mtx.unlock();
 }
-state_single MarkovManager::getEvent()
+state_single MarkovManager::getEvent(bool needChoices)
 {
-  state_single event{""};
   mtx.lock();
+  state_single event{""};
 
   try{
     // get an observation
-    event = chain.generateObservation(outputMemory, 100);
+    event = chain.generateObservation(outputMemory, outputMemory.size(), needChoices);
     // check the output
     // update the outputMemory
     addStateToStateSequence(outputMemory, event);
