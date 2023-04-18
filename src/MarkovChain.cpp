@@ -127,7 +127,7 @@ state_single MarkovChain::generateObservation(const state_sequence& prevState, i
   // check for empty model
   if (model.size() == 0)
   {
-    std::cout << "warning - requested obs from empty model " << std::endl;
+    //std::cout << "warning - requested obs from empty model " << std::endl;
     return "0";
   }
   // don't allow orders beyond our own maxOrder
