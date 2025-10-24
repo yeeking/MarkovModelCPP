@@ -32,8 +32,9 @@ class MarkovManager {
       /**
       * retrieve an event from the underlying markov model. 
       * @param needChoices: if true, requires that the underlying model only selects states which have at least two observations for them
+      * @param useInputAsContext: if true, use the current input state for the model as the 'context' for the generation, as opposed to using the previous output state (when false)
       */
-      state_single getEvent(bool needChoices = true);
+      state_single getEvent(bool needChoices = true, bool useInputAsContext = false);
       /**
        * returns the order of the model that generated the last event 
        * calls 
@@ -50,7 +51,7 @@ class MarkovManager {
        */
       void addStateToStateSequence(state_sequence& seq, state_single new_state);
       /**
-       * Update the chain by removing recently visited parts 
+     pitchModel  * Update the chain by removing recently visited parts 
        */
       void giveNegativeFeedback();
       /**
@@ -61,24 +62,43 @@ class MarkovManager {
       /**
        * convenience function to save the model to the sent file. uses model.toString to first
        * convert it to a file
-       */
+      */
       bool saveModel(const std::string& filename);
        /**
        * convenience function to  load the model to the sent file. uses model.fromString to first
        * convert it to a file
        */
       bool loadModel(const std::string& filename);
+      /**
+       * convenience function to save the model using the binary serialiser.
+       */
+      bool saveModelBinary(const std::string& filename);
+      /**
+       * convenience function to load the model using the binary serialiser.
+       */
+      bool loadModelBinary(const std::string& filename);
 
       /** returns a string representation of the model suitable for saving
        * in case you don't want to use saveModel directly
       */
       std::string getModelAsString();
+      /**
+       * returns a binary representation of the model suitable for saving
+       */
+      std::string getModelAsBinaryString();
       /** tries to convert the sent string into a model by calling model.fromString */
-      bool setupModelFromString(std::string);
+      bool setupModelFromString(const std::string&);
+      /**
+       * tries to convert the sent binary string into a model by calling model.fromStringBinary
+       */
+      bool setupModelFromBinaryString(const std::string&);
+
 
 
       /** returns a copy of the model */
       MarkovChain getCopyOfModel();
+      /** calls getSize on the model  */
+      size_t getModelSize();
   private:
       void rememberChainEvent(state_and_observation event);
       
